@@ -57,9 +57,9 @@ def train_random_forest(X, y):
     rf_reg = RandomForestRegressor()
 
     param_grid={
-        'n_estimators':[300, 400],
-        'max_depth':[7, 8, 9, 10],
-        'max_leaf_nodes':[45, 55, 65, 75],
+        'n_estimators':[300],
+        'max_depth':[9],
+        'max_leaf_nodes':[85],
         'random_state' : [1]
     }
     reg = grid_search(rf_reg, param_grid)
@@ -87,7 +87,7 @@ def main():
     test_data = prepare_data(test_data)
 
     test_prediction_linear_reg = linear_reg.predict(test_data)
-    test_prediction_random_forest = linear_reg.predict(test_data)
+    test_prediction_random_forest = random_forest_reg.predict(test_data)
 
     output_linear_reg = pd.DataFrame(list(zip(test_ids, test_prediction_linear_reg)), columns = ['Id', 'SalePrice'])
     output_random_forest = pd.DataFrame(list(zip(test_ids, test_prediction_random_forest)), columns = ['Id', 'SalePrice'])
