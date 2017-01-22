@@ -1,3 +1,7 @@
+import sys
+sys.path.append("../helpers/")
+import preprocessor
+
 from sklearn.linear_model import LinearRegression
 import pandas as pd
 from sklearn.preprocessing import Imputer
@@ -6,7 +10,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LinearRegression
-import numpy as np
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.feature_selection import SelectFromModel
 import pickle
 
 
@@ -74,26 +79,33 @@ def main():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
 
-    random_forest_reg = train_random_forest(X_train, y_train)
-    print 'Random Forest score,', random_forest_reg.score(X_test, y_test)
-    print 'Best Estimator', random_forest_reg.best_estimator_
-    print 'Best Params', random_forest_reg.best_params_
+    clf = ExtraTreesClassifier()
+    clf = clf.fit(X_train, y_train)
+    print clf.feature_importances_
+    model = SelectFromModel(clf, prefit=True)
+    X_new = model.transform(X)
+    print X_new.shape
 
-    linear_reg = train(X_train, y_train) # train data
-    print 'Linear Regression score', linear_reg.score(X_test, y_test)
-
-    test_ids, test_data = load_test_data()
-    test_data = filter_data(test_data, features)
-    test_data = prepare_data(test_data)
-
-    test_prediction_linear_reg = linear_reg.predict(test_data)
-    test_prediction_random_forest = random_forest_reg.predict(test_data)
-
-    output_linear_reg = pd.DataFrame(list(zip(test_ids, test_prediction_linear_reg)), columns = ['Id', 'SalePrice'])
-    output_random_forest = pd.DataFrame(list(zip(test_ids, test_prediction_random_forest)), columns = ['Id', 'SalePrice'])
-
-    output_linear_reg.to_csv('output_linear_reg.csv', index=False)
-    output_random_forest.to_csv('output_random_forest.csv', index=False)
+    # random_forest_reg = train_random_forest(X_train, y_train)
+    # print 'Random Forest score,', random_forest_reg.score(X_test, y_test)
+    # print 'Best Estimator', random_forest_reg.best_estimator_
+    # print 'Best Params', random_forest_reg.best_params_
+    #
+    # linear_reg = train(X_train, y_train) # train data
+    # print 'Linear Regression score', linear_reg.score(X_test, y_test)
+    #
+    # test_ids, test_data = load_test_data()
+    # test_data = filter_data(test_data, features)
+    # test_data = prepare_data(test_data)
+    #
+    # test_prediction_linear_reg = linear_reg.predict(test_data)
+    # test_prediction_random_forest = random_forest_reg.predict(test_data)
+    #
+    # output_linear_reg = pd.DataFrame(list(zip(test_ids, test_prediction_linear_reg)), columns = ['Id', 'SalePrice'])
+    # output_random_forest = pd.DataFrame(list(zip(test_ids, test_prediction_random_forest)), columns = ['Id', 'SalePrice'])
+    #
+    # output_linear_reg.to_csv('output_linear_reg.csv', index=False)
+    # output_random_forest.to_csv('output_random_forest.csv', index=False)
 
 main()
 #### Testing

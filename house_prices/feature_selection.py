@@ -1,3 +1,6 @@
+import sys
+sys.path.append("../helpers/")
+import preprocessor
 
 import pandas as pd
 from sklearn.preprocessing import Imputer
@@ -6,13 +9,6 @@ from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pickle
 
-def load_data():
-    train_file = '../dataset/housing_train.csv'
-    data = pd.read_csv(train_file)
-    data.drop('Id', axis = 1, inplace=1) # drop id column
-    y = data['SalePrice'] # set y
-    X = data.drop('SalePrice', axis = 1) # drop y from training data
-    return X, y
 
 def prepare_data(data):
     im = Imputer(missing_values='NaN', strategy='most_frequent', axis=1)
@@ -50,12 +46,14 @@ def export_features(feature_importances, threshold):
     pickle.dump(features,open('features.pkl','wb')) # export
 
 def main():
-    X, y = load_data() # load training data
+
+    X, y = preprocessor.load_csv('../dataset/housing_train.csv', 'SalePrice', ['Id']) # load training data
     X, columns = prepare_data(X)
     clf = train(X, y) # train data
     feature_importances = get_feature_importances(clf, columns) # Calculate feature importances
-    statistics = get_statistics(feature_importances) # get statistics
+    #statistics = get_statistics(feature_importances) # get statistics
     feature_importances.to_csv('feature_importances.csv') # export features to a csv file
     export_features(feature_importances, 8) # export features to use in regression
 
-main()
+if __name__ == '__main__':
+    main()
